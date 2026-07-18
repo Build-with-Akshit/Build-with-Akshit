@@ -48,14 +48,11 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 ---
 
+
+
 # 📊 GitHub Stats:
 ![](https://github-readme-stats.shion.dev/api?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true)<br/>
-![](https://streak-stats.demolab.com/?user=Build-with-Akshit&theme=cobalt2&hide_border=false)<br/>
-![](https://github-readme-stats.shion.dev/api/top-langs/?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true&layout=compact)
-
-<!-- ![](https://quotes-github-readme.vercel.app/api?type=vetical&theme=radical) -->
-
-![](https://github-contributor-stats.vercel.app/api?username=Build-with-Akshit&limit=5&theme=dark&combine_all_yearly_contributions=true)
+![](https://github-readme-streak-stats-eight.vercel.app/?user=Build-with-Akshit&theme=cobalt2&hide_border=false)<br/>
+![](https://github-readme-stats.shion.dev/api/top-langs/?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true&layout=compact)<br/>
 ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)
-
 
