@@ -66,6 +66,7 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 # 📊 GitHub Stats:
 <!-- ![](https://github-readme-stats.shion.dev/api?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true)<br/> -->
 <!-- ![](https://github-readme-stats.shion.dev/api/top-langs/?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true&layout=compact)<br/> -->
+![LOC Stats](https://YOUR-VERCEL-URL.vercel.app/api?username=Build-with-Akshit&theme=cobalt2&border_radius=15&card_width=550)
 
 ![](https://github-readme-streak-stats-eight.vercel.app/?user=Build-with-Akshit&theme=cobalt2&hide_border=false&border_radius=15&card_width=550)<br/>
 ![](https://github-readme-stats-phi-seven-83.vercel.app/api?username=Build-with-Akshit&show_icons=true&theme=cobalt2&include_all_commits=true&count_private=true&border_radius=15&rank_icon=github&custom_title=Akshit's%20GitHub%20Stats)<br/>
