@@ -50,6 +50,19 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 
 
+## 📈 Lifetime Coding Stats
+
+<!-- LOC_STATS_START -->
+
+```text
+📝 Total Lines of Code : Loading...
+📦 Total Repositories  : Loading...
+💻 Languages           : Loading...
+🕒 Last Updated        : Waiting for first run...
+```
+
+<!-- LOC_STATS_END -->
+
 # 📊 GitHub Stats:
 <!-- ![](https://github-readme-stats.shion.dev/api?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true)<br/> -->
 <!-- ![](https://github-readme-stats.shion.dev/api/top-langs/?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true&layout=compact)<br/> -->

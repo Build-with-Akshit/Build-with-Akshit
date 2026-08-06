@@ -1,0 +1,43 @@
+name: Update LOC Stats
+
+on:
+  workflow_dispatch:    # Manual trigger button
+
+  push:
+    branches: [main]   # Auto-run on push to main
+
+  schedule:
+    - cron: "0 0 * * *"  # Daily at midnight UTC
+
+jobs:
+  update-loc:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write    # Needed to push README changes
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq git
+
+      - name: Run LOC counter
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          USERNAME: Build-with-Akshit
+        run: python scripts/update_loc.py
+
+      - name: Commit & Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "📊 Auto-update lifetime coding stats"
+          file_pattern: "README.md"
