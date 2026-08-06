@@ -267,6 +267,7 @@ const renderStatsCard = (stats, options = {}) => {
     totalDiscussionsStarted,
     totalDiscussionsAnswered,
     contributedTo,
+    totalLoc,
     rank,
   } = stats;
   const {
@@ -339,6 +340,16 @@ const renderStatsCard = (stats, options = {}) => {
     value: totalCommits,
     id: "commits",
   };
+
+  if (show.includes("loc") || totalLoc) {
+    STATS.loc = {
+      icon: `<path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>`,
+      label: "Total Lines of Code",
+      value: totalLoc || 0,
+      id: "loc",
+    };
+  }
+
   STATS.prs = {
     icon: icons.prs,
     label: i18n.t("statcard.prs"),

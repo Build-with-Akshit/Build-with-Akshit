@@ -22,6 +22,14 @@ const GRAPHQL_REPOS_FIELD = `
       stargazers {
         totalCount
       }
+      languages(first: 20, orderBy: {field: SIZE, direction: DESC}) {
+        edges {
+          size
+          node {
+            name
+          }
+        }
+      }
     }
     pageInfo {
       hasNextPage
@@ -321,6 +329,27 @@ const fetchStats = async (
     .reduce((prev, curr) => {
       return prev + curr.stargazers.totalCount;
     }, 0);
+
+  const BYTES_PER_LINE = {
+    Kotlin: 35, Java: 38, Python: 30, Dart: 34, JavaScript: 32,
+    TypeScript: 34, "C++": 36, C: 32, Go: 28, Rust: 34,
+    HTML: 45, CSS: 30, SCSS: 28, Shell: 25, Ruby: 28,
+    PHP: 32, Swift: 34, Lua: 26, R: 28, CMake: 30,
+    Makefile: 25, Dockerfile: 22, YAML: 28, JSON: 30,
+    XML: 50, Markdown: 40, "Jupyter Notebook": 50,
+  };
+  const DEFAULT_BPL = 32;
+
+  let totalLoc = 0;
+  for (const repo of user.repositories.nodes) {
+    if (!repoToHide.has(repo.name) && repo.languages && repo.languages.edges) {
+      for (const edge of repo.languages.edges) {
+        const bpl = BYTES_PER_LINE[edge.node.name] || DEFAULT_BPL;
+        totalLoc += Math.floor(edge.size / bpl);
+      }
+    }
+  }
+  stats.totalLoc = totalLoc;
 
   stats.rank = calculateRank({
     all_commits: include_all_commits,

@@ -50,13 +50,9 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 
 
-## 📈 Lifetime Coding Stats
-
-![LOC Stats](https://build-with-akshit-beta.vercel.app/api/loc?username=Build-with-Akshit&theme=cobalt2&border_radius=15&card_width=550)<br/>
-
 # 📊 GitHub Stats:
 
 ![](https://github-readme-streak-stats-eight.vercel.app/?user=Build-with-Akshit&theme=cobalt2&hide_border=false&border_radius=15&card_width=550)<br/>
-![](https://build-with-akshit-beta.vercel.app/api?username=Build-with-Akshit&show_icons=true&theme=cobalt2&include_all_commits=true&count_private=true&border_radius=15&rank_icon=github&custom_title=Akshit's%20GitHub%20Stats)<br/>
+![](https://build-with-akshit-beta.vercel.app/api?username=Build-with-Akshit&show_icons=true&theme=cobalt2&include_all_commits=true&count_private=true&border_radius=15&rank_icon=github&custom_title=Akshit's%20GitHub%20Stats&show=loc)<br/>
 ![](https://build-with-akshit-beta.vercel.app/api/top-langs/?username=Build-with-Akshit&layout=compact&theme=cobalt2&border_radius=15&langs_count=20)<br/>
 ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/>
