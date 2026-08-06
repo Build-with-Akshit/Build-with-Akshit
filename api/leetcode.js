@@ -312,8 +312,10 @@ async function renderLeetCodeCard(data, options = {}) {
 
 <!-- ═══════════ HEADER ═══════════ -->
 <g transform="translate(${pad}, 38)">
-  <!-- Exact Official LeetCode Logo (Base64 PNG from Reference) -->
-  <image href="data:image/png;base64,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" x="-2" y="-18" width="28" height="28" />
+  <!-- Official LeetCode Logo (SVG Vector) -->
+  <g transform="translate(-2, -18) scale(1.15)" fill="#ffa116">
+    <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+  </g>
   <text x="34" y="-2" font-size="18" font-weight="700" fill="${white}">${user.username}</text>
   <text x="34" y="18" font-size="13" font-weight="600" fill="${green}">Rank ${fmtRank}</text>
 </g>
@@ -333,7 +335,7 @@ async function renderLeetCodeCard(data, options = {}) {
 <line x1="${dividerX}" y1="30" x2="${dividerX}" y2="${topEnd}" stroke="${dimGreen}" stroke-width="1" stroke-opacity="0.4"/>
 
 <!-- Solved Ring -->
-<g transform="translate(95, 135)">
+<g transform="translate(75, 135)">
   <circle cx="0" cy="0" r="${R}" stroke-width="7" fill="none" stroke="${track}"/>
   <circle cx="0" cy="0" r="${R}" stroke-width="7" fill="none" stroke="${green}" stroke-dasharray="${C}" stroke-dashoffset="${off}" stroke-linecap="round" transform="rotate(-90)"/>
   <text x="0" y="5" text-anchor="middle" font-size="30" font-weight="800" fill="${white}">${solved}</text>
@@ -341,24 +343,24 @@ async function renderLeetCodeCard(data, options = {}) {
 </g>
 
 <!-- Easy / Medium / Hard Progress Bars -->
-<g transform="translate(175, 100)">
+<g transform="translate(150, 100)">
   <!-- Easy -->
   <text x="0" y="14" font-size="14" font-weight="600" fill="${white}">Easy</text>
-  <rect x="70" y="7" width="${barW}" height="8" rx="4" fill="${track}"/>
-  <rect x="70" y="7" width="${Math.max(2, (pctEasy / 100) * barW)}" height="8" rx="4" fill="${easyC}"/>
-  <text x="${70 + barW + 14}" y="15" font-size="13" font-weight="600" fill="${green}">${easySolved}/${easyQ}</text>
+  <rect x="60" y="7" width="${barW}" height="8" rx="4" fill="${track}"/>
+  <rect x="60" y="7" width="${Math.max(2, (pctEasy / 100) * barW)}" height="8" rx="4" fill="${easyC}"/>
+  <text x="${60 + barW + 12}" y="15" font-size="13" font-weight="600" fill="${green}">${easySolved}/${easyQ}</text>
 
   <!-- Medium -->
   <text x="0" y="44" font-size="14" font-weight="600" fill="${white}">Medium</text>
-  <rect x="70" y="37" width="${barW}" height="8" rx="4" fill="${track}"/>
-  <rect x="70" y="37" width="${Math.max(2, (pctMed / 100) * barW)}" height="8" rx="4" fill="${medC}"/>
-  <text x="${70 + barW + 14}" y="45" font-size="13" font-weight="600" fill="${medC}">${medSolved}/${medQ}</text>
+  <rect x="60" y="37" width="${barW}" height="8" rx="4" fill="${track}"/>
+  <rect x="60" y="37" width="${Math.max(2, (pctMed / 100) * barW)}" height="8" rx="4" fill="${medC}"/>
+  <text x="${60 + barW + 12}" y="45" font-size="13" font-weight="600" fill="${medC}">${medSolved}/${medQ}</text>
 
   <!-- Hard -->
   <text x="0" y="74" font-size="14" font-weight="600" fill="${white}">Hard</text>
-  <rect x="70" y="67" width="${barW}" height="8" rx="4" fill="${track}"/>
-  <rect x="70" y="67" width="${Math.max(2, (pctHard / 100) * barW)}" height="8" rx="4" fill="${hardC}"/>
-  <text x="${70 + barW + 14}" y="75" font-size="13" font-weight="600" fill="${hardC}">${hardSolved}/${hardQ}</text>
+  <rect x="60" y="67" width="${barW}" height="8" rx="4" fill="${track}"/>
+  <rect x="60" y="67" width="${Math.max(2, (pctHard / 100) * barW)}" height="8" rx="4" fill="${hardC}"/>
+  <text x="${60 + barW + 12}" y="75" font-size="13" font-weight="600" fill="${hardC}">${hardSolved}/${hardQ}</text>
 </g>
 
 <!-- Total Submissions -->
