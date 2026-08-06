@@ -1,43 +1,70 @@
 #!/usr/bin/env python3
 """
-Lifetime Coding Stats — Auto-update README with total LOC across all repos.
-Uses `scc` (Sloc Cloc and Code) for fast, accurate line counting.
+Lifetime Coding Stats — Local version (no GitHub Actions needed).
+Uses GitHub API language-bytes endpoint to estimate LOC across all repos.
+Run locally → updates README → you push.
 """
 
 import json
 import os
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
+# Fix Windows console encoding for emoji support
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # ─── Config ───────────────────────────────────────────────────────────────────
 
-GH_TOKEN  = os.environ.get("GH_TOKEN", "")
-USERNAME  = os.environ.get("USERNAME", "Build-with-Akshit")
-README    = Path(__file__).resolve().parent.parent / "README.md"
+GH_TOKEN = os.environ.get("GH_TOKEN", "")
+USERNAME = "Build-with-Akshit"
+README   = Path(__file__).resolve().parent.parent / "README.md"
 
-# Markers in README between which stats are injected
 START_MARKER = "<!-- LOC_STATS_START -->"
 END_MARKER   = "<!-- LOC_STATS_END -->"
 
-# Directories to always exclude from counting
-EXCLUDE_DIRS = [
-    ".git", "node_modules", "vendor", "venv", ".venv", "__pycache__",
-    "build", "dist", ".gradle", ".idea", ".vscode", ".dart_tool",
-    "ios/Pods", ".pub-cache", "Pods", ".next", ".nuxt", "target",
-    "out", "bin", "obj", ".cache", "coverage", "generated",
-]
+# Average bytes per line of code (industry standard estimate)
+# Different languages have different averages
+BYTES_PER_LINE = {
+    "Kotlin":     35,
+    "Java":       38,
+    "Python":     30,
+    "Dart":       34,
+    "JavaScript": 32,
+    "TypeScript": 34,
+    "C++":        36,
+    "C":          32,
+    "Go":         28,
+    "Rust":       34,
+    "HTML":       45,
+    "CSS":        30,
+    "SCSS":       28,
+    "Shell":      25,
+    "Bash":       25,
+    "Ruby":       28,
+    "PHP":        32,
+    "Swift":      34,
+    "Lua":        26,
+    "R":          28,
+    "Jupyter Notebook": 50,
+    "CMake":      30,
+    "Makefile":   25,
+    "Dockerfile": 22,
+    "YAML":       28,
+    "JSON":       30,
+    "XML":        50,
+    "Markdown":   40,
+}
+DEFAULT_BPL = 32  # default bytes per line for unknown languages
 
-# ─── GitHub API Helpers ───────────────────────────────────────────────────────
+# ─── GitHub API ───────────────────────────────────────────────────────────────
 
-def gh_api(endpoint: str) -> list | dict:
-    """Call GitHub REST API with pagination support."""
+def gh_api(endpoint: str):
+    """Call GitHub REST API with pagination."""
     results = []
     url = f"https://api.github.com{endpoint}"
 
@@ -45,6 +72,7 @@ def gh_api(endpoint: str) -> list | dict:
         req = Request(url)
         req.add_header("Accept", "application/vnd.github+json")
         req.add_header("X-GitHub-Api-Version", "2022-11-28")
+        req.add_header("User-Agent", "LOC-Counter")
         if GH_TOKEN:
             req.add_header("Authorization", f"Bearer {GH_TOKEN}")
 
@@ -54,171 +82,88 @@ def gh_api(endpoint: str) -> list | dict:
                 if isinstance(data, list):
                     results.extend(data)
                 else:
-                    return data  # single-object endpoint
+                    return data
 
-                # Parse Link header for pagination
                 link_header = resp.headers.get("Link", "")
                 url = None
                 for part in link_header.split(","):
                     if 'rel="next"' in part:
                         url = part.split(";")[0].strip().strip("<>")
         except HTTPError as e:
-            print(f"⚠ API error {e.code} for {url}: {e.reason}")
+            print(f"  ⚠ API error {e.code}: {e.reason}")
             break
 
     return results
 
 
-def fetch_repos() -> list[dict]:
-    """Fetch all repositories for the user (public + private if token allows)."""
+def fetch_repos():
+    """Fetch all owned repos (excludes forks)."""
     if GH_TOKEN:
-        # Authenticated: gets private repos too
         repos = gh_api("/user/repos?per_page=100&affiliation=owner&type=all")
     else:
-        # Unauthenticated: only public repos
         repos = gh_api(f"/users/{USERNAME}/repos?per_page=100&type=owner")
 
-    # Filter out forks
     repos = [r for r in repos if not r.get("fork", False)]
-
     print(f"📦 Found {len(repos)} repositories (forks excluded)")
     return repos
 
 
-# ─── SCC / LOC Counting ──────────────────────────────────────────────────────
-
-def install_scc():
-    """Install scc if not already available."""
-    if shutil.which("scc"):
-        print("✅ scc already installed")
-        return
-
-    print("📥 Installing scc...")
-    subprocess.run(
-        [
-            "bash", "-c",
-            "curl -sL https://github.com/boyter/scc/releases/download/v3.4.0/"
-            "scc_Linux_x86_64.tar.gz | tar xz -C /usr/local/bin scc"
-        ],
-        check=True,
-    )
-    print("✅ scc installed")
+def get_repo_languages(owner: str, repo: str) -> dict:
+    """Get language bytes for a repo via GitHub API."""
+    return gh_api(f"/repos/{owner}/{repo}/languages") or {}
 
 
-def clone_repo(clone_url: str, dest: str) -> bool:
-    """Shallow-clone a repository. Returns True on success."""
-    try:
-        # Build clone URL with token for private repos
-        if GH_TOKEN and clone_url.startswith("https://"):
-            clone_url = clone_url.replace(
-                "https://", f"https://x-access-token:{GH_TOKEN}@"
-            )
+# ─── LOC Calculation ─────────────────────────────────────────────────────────
 
-        subprocess.run(
-            ["git", "clone", "--depth=1", "--single-branch", clone_url, dest],
-            check=True,
-            capture_output=True,
-            timeout=120,
-        )
-        return True
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
-        print(f"  ⚠ Clone failed: {e}")
-        return False
+def bytes_to_loc(lang: str, byte_count: int) -> int:
+    """Convert language bytes to estimated lines of code."""
+    bpl = BYTES_PER_LINE.get(lang, DEFAULT_BPL)
+    return byte_count // bpl
 
 
-def count_loc(repo_path: str) -> dict:
-    """Run scc on a repo and return {language: lines} dict."""
-    exclude_arg = ",".join(EXCLUDE_DIRS)
-
-    try:
-        result = subprocess.run(
-            [
-                "scc", repo_path,
-                "--exclude-dir", exclude_arg,
-                "--format", "json",
-                "--no-cocomo",
-                "--no-gen",       # skip generated files
-                "--no-min-gen",   # skip minified generated files
-            ],
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
-
-        if result.returncode != 0:
-            print(f"  ⚠ scc error: {result.stderr.strip()}")
-            return {}
-
-        if not result.stdout.strip():
-            return {}
-
-        data = json.loads(result.stdout)
-        lang_lines = {}
-        for entry in data:
-            lang = entry.get("Name", "Unknown")
-            lines = entry.get("Code", 0)
-            if lines > 0:
-                lang_lines[lang] = lang_lines.get(lang, 0) + lines
-
-        return lang_lines
-
-    except (subprocess.TimeoutExpired, json.JSONDecodeError) as e:
-        print(f"  ⚠ Count error: {e}")
-        return {}
-
-
-# ─── Stats Aggregation ───────────────────────────────────────────────────────
-
-def aggregate_stats(repos: list[dict]) -> tuple[int, dict, int]:
-    """
-    Clone each repo, count LOC, aggregate.
-    Returns: (total_loc, {language: lines}, repo_count)
-    """
-    total_loc = 0
-    all_langs: dict[str, int] = {}
+def aggregate_stats(repos):
+    """Aggregate language stats across all repos."""
+    all_langs = {}  # {language: total_bytes}
     counted = 0
 
-    with tempfile.TemporaryDirectory(prefix="loc_") as tmp:
-        for i, repo in enumerate(repos, 1):
-            name = repo["name"]
-            clone_url = repo["clone_url"]
-            print(f"\n[{i}/{len(repos)}] 📂 {name}")
+    for i, repo in enumerate(repos, 1):
+        name = repo["name"]
+        owner = repo["owner"]["login"]
+        print(f"  [{i}/{len(repos)}] 📂 {name}", end="")
 
-            dest = os.path.join(tmp, name)
-            if not clone_repo(clone_url, dest):
-                continue
+        languages = get_repo_languages(owner, name)
 
-            lang_lines = count_loc(dest)
-
-            repo_total = sum(lang_lines.values())
-            total_loc += repo_total
+        if languages:
+            for lang, bytes_count in languages.items():
+                all_langs[lang] = all_langs.get(lang, 0) + bytes_count
+            total_bytes = sum(languages.values())
+            print(f"  → {total_bytes:,} bytes ({len(languages)} languages)")
             counted += 1
+        else:
+            print("  → (empty)")
 
-            for lang, lines in lang_lines.items():
-                all_langs[lang] = all_langs.get(lang, 0) + lines
+    # Convert bytes to LOC
+    lang_loc = {}
+    for lang, total_bytes in all_langs.items():
+        loc = bytes_to_loc(lang, total_bytes)
+        if loc > 0:
+            lang_loc[lang] = loc
 
-            print(f"  ✅ {repo_total:,} lines")
-
-            # Cleanup immediately to save disk
-            shutil.rmtree(dest, ignore_errors=True)
-
-    return total_loc, all_langs, counted
+    total_loc = sum(lang_loc.values())
+    return total_loc, lang_loc, counted
 
 
 # ─── README Updater ──────────────────────────────────────────────────────────
 
 def format_number(n: int) -> str:
-    """Format number with commas: 128534 → 128,534"""
     return f"{n:,}"
 
 
-def build_stats_block(total_loc: int, langs: dict, repo_count: int) -> str:
-    """Build the markdown stats block to inject into README."""
+def build_stats_block(total_loc, langs, repo_count):
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-    # Top languages by percentage
     sorted_langs = sorted(langs.items(), key=lambda x: x[1], reverse=True)
-    top_langs = sorted_langs[:8]  # Show top 8
+    top_langs = sorted_langs[:8]
 
     lang_parts = []
     for lang, lines in top_langs:
@@ -227,7 +172,7 @@ def build_stats_block(total_loc: int, langs: dict, repo_count: int) -> str:
 
     lang_str = ", ".join(lang_parts)
 
-    block = f"""
+    return f"""
 ```text
 📝 Total Lines of Code : {format_number(total_loc)}
 📦 Total Repositories  : {repo_count}
@@ -235,11 +180,9 @@ def build_stats_block(total_loc: int, langs: dict, repo_count: int) -> str:
 🕒 Last Updated        : {now}
 ```
 """
-    return block
 
 
-def update_readme(stats_block: str):
-    """Replace content between markers in README."""
+def update_readme(stats_block):
     if not README.exists():
         print(f"❌ README not found at {README}")
         sys.exit(1)
@@ -248,52 +191,51 @@ def update_readme(stats_block: str):
 
     if START_MARKER not in content or END_MARKER not in content:
         print("❌ Markers not found in README!")
-        print(f"   Add these markers where you want stats to appear:")
-        print(f"   {START_MARKER}")
-        print(f"   {END_MARKER}")
         sys.exit(1)
 
-    # Replace everything between markers
     pattern = re.escape(START_MARKER) + r".*?" + re.escape(END_MARKER)
     replacement = f"{START_MARKER}\n{stats_block}\n{END_MARKER}"
     new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
 
     README.write_text(new_content, encoding="utf-8")
-    print(f"\n✅ README updated at {README}")
+    print(f"\n✅ README updated!")
 
 
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 def main():
     print("=" * 60)
-    print("🚀 Lifetime Coding Stats — LOC Counter")
+    print("🚀 Lifetime Coding Stats — LOC Counter (Local)")
     print("=" * 60)
 
     if not GH_TOKEN:
-        print("⚠ No GH_TOKEN set. Only public repos will be counted.")
-        print("  Set GH_TOKEN secret for private repos.\n")
+        print("⚠  No GH_TOKEN found. Only PUBLIC repos will be counted.")
+        print("   Set it: $env:GH_TOKEN = 'your_token_here'\n")
 
-    # Step 1: Install scc
-    install_scc()
-
-    # Step 2: Fetch all repos
     repos = fetch_repos()
     if not repos:
         print("❌ No repositories found!")
         sys.exit(1)
 
-    # Step 3: Count LOC across all repos
+    print(f"\n📊 Scanning {len(repos)} repos...\n")
     total_loc, all_langs, counted = aggregate_stats(repos)
 
     print("\n" + "=" * 60)
     print(f"📊 TOTAL: {format_number(total_loc)} lines across {counted} repos")
     print("=" * 60)
 
-    # Step 4: Update README
+    # Show breakdown
+    sorted_langs = sorted(all_langs.items(), key=lambda x: x[1], reverse=True)
+    print("\n📋 Language Breakdown:")
+    for lang, lines in sorted_langs[:15]:
+        pct = (lines / total_loc * 100) if total_loc > 0 else 0
+        bar = "█" * int(pct / 2)
+        print(f"   {lang:20s} {format_number(lines):>10s} lines  ({pct:5.1f}%)  {bar}")
+
     stats_block = build_stats_block(total_loc, all_langs, counted)
     update_readme(stats_block)
 
-    print("\n🎉 Done!")
+    print("\n🎉 Done! Now just: git add -A && git commit && git push")
 
 
 if __name__ == "__main__":

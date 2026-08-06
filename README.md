@@ -55,10 +55,10 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 <!-- LOC_STATS_START -->
 
 ```text
-📝 Total Lines of Code : Loading...
-📦 Total Repositories  : Loading...
-💻 Languages           : Loading...
-🕒 Last Updated        : Waiting for first run...
+📝 Total Lines of Code : 18,588
+📦 Total Repositories  : 8
+💻 Languages           : TypeScript (31.6%), Dart (18.7%), Python (11.3%), JavaScript (10.8%), C++ (7.6%), CMake (7.1%), CSS (6.5%), Kotlin (2.4%)
+🕒 Last Updated        : 2026-08-06 12:56 UTC
 ```
 
 <!-- LOC_STATS_END -->
