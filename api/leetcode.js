@@ -276,7 +276,7 @@ async function renderLeetCodeCard(data, options = {}) {
 
   const rx = border_radius;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${totalH}" viewBox="0 0 ${W} ${totalH}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${totalH}" viewBox="0 0 ${W} ${totalH}">
 <style>text{font-family:'Segoe UI',Ubuntu,'Helvetica Neue',sans-serif}a{cursor:pointer;text-decoration:none}</style>
 
 <defs>
@@ -315,7 +315,7 @@ async function renderLeetCodeCard(data, options = {}) {
 <rect x="1" y="1" width="${W - 2}" height="${totalH - 2}" rx="${rx}" fill="${bg}" stroke="${bdr}" stroke-width="2"/>
 
 <!-- ═══════════ HEADER ═══════════ -->
-<a href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
+<a href="https://leetcode.com/u/${user.username}/" xlink:href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
 <g transform="translate(${pad}, 38)">
   <!-- Official LeetCode Logo (Real Multi-Color Brand Vector) -->
   <g transform="translate(-2, -18) scale(1.15)">
@@ -332,7 +332,7 @@ async function renderLeetCodeCard(data, options = {}) {
 </a>
 
 <!-- Avatar (Moved further right to prevent overlap with long usernames) -->
-<a href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
+<a href="https://leetcode.com/u/${user.username}/" xlink:href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
 <g transform="translate(345, 22)">
   <circle cx="22" cy="22" r="22" fill="#161b22" stroke="${green}" stroke-width="1.8"/>
   ${
