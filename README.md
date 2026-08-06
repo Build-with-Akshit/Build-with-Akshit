@@ -58,6 +58,6 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 # 🧩 LeetCode Stats:
 
-![](https://build-with-akshit-beta.vercel.app/api/leetcode?username=Build-with-Akshit&theme=github_dark&border_radius=20&v=9)<br/>
+![](https://build-with-akshit-beta.vercel.app/api/leetcode?username=Build-with-Akshit&theme=github_dark&border_radius=20&v=10)<br/>
 
 ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/>

@@ -312,11 +312,16 @@ async function renderLeetCodeCard(data, options = {}) {
 
 <!-- ═══════════ HEADER ═══════════ -->
 <g transform="translate(${pad}, 38)">
-  <!-- Exact LeetCode Logo Vector -->
+  <!-- Exact LeetCode Logo Vector (Perfectly Aligned) -->
   <g transform="translate(0, -16) scale(0.95)">
-    <path d="M 17 3 L 5 15 L 17 27" fill="none" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M 19 9 C 13 9, 11 14, 11 19 C 11 24, 13 29, 19 29" fill="none" stroke="#FFA116" stroke-width="4.2" stroke-linecap="round"/>
-    <line x1="16" y1="19" x2="26" y2="19" stroke="#B3B3B3" stroke-width="4.2" stroke-linecap="round"/>
+    <!-- 1. Orange Curve (Rendered first so it sits UNDER white) -->
+    <path d="M 11.5 9.5 C 20.5 9.5, 24 12, 24 16 C 24 20, 20.5 22.5, 11.5 22.5" fill="none" stroke="#FFA116" stroke-width="4.2" stroke-linecap="round"/>
+    
+    <!-- 2. Grey Horizontal Bar -->
+    <line x1="14" y1="16" x2="24" y2="16" stroke="#B3B3B3" stroke-width="4.2" stroke-linecap="round"/>
+    
+    <!-- 3. White Bracket (Rendered ON TOP to cleanly cap the orange curve) -->
+    <path d="M 18 3 L 5 16 L 18 29" fill="none" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
   <text x="34" y="-2" font-size="18" font-weight="700" fill="${white}">${user.username}</text>
   <text x="34" y="18" font-size="13" font-weight="600" fill="${green}">Rank ${fmtRank}</text>
