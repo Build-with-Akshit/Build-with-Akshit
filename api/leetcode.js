@@ -115,7 +115,6 @@ async function renderLeetCodeCard(data, options = {}) {
   const user = data?.data?.matchedUser;
   if (!user) throw new CustomError("LeetCode user not found", "USER_NOT_FOUND");
 
-  // Fetch avatar as base64 so GitHub Camo Proxy renders it seamlessly
   const avatarB64 = await fetchAvatarBase64(user.profile?.userAvatar);
 
   // ── Data Extraction ──
@@ -136,7 +135,7 @@ async function renderLeetCodeCard(data, options = {}) {
   const totalSub = ts.find((s) => s.difficulty === "All")?.submissions || 0;
 
   const currentStreak = calcCurrentStreak(user.userCalendar?.submissionCalendar);
-  const highestStreak = user.userCalendar?.streak || 0; // Max streak
+  const highestStreak = user.userCalendar?.streak || 0;
 
   const ranking = user.profile?.ranking || 0;
   const fmtRank = ranking > 0 ? ranking.toLocaleString() : "N/A";
@@ -164,10 +163,6 @@ async function renderLeetCodeCard(data, options = {}) {
   const R = 40;
   const C = 2 * Math.PI * R;
   const off = C - (pctAll / 100) * C;
-
-  // ── Streak Ring Math ──
-  const sR = 32;
-  const sC = 2 * Math.PI * sR;
 
   // ── Layout Dimensions ──
   const W = 920;
@@ -286,7 +281,7 @@ async function renderLeetCodeCard(data, options = {}) {
 
 <defs>
   <!-- Glow Filters -->
-  <filter id="green-glow" x="-30%" y="-30%" width="160%" height="160%">
+  <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
     <feGaussianBlur stdDeviation="3.5" result="blur" />
     <feMerge>
       <feMergeNode in="blur" />
@@ -294,7 +289,7 @@ async function renderLeetCodeCard(data, options = {}) {
     </feMerge>
   </filter>
 
-  <filter id="blue-glow" x="-50%" y="-50%" width="200%" height="200%">
+  <filter id="flame-glow" x="-50%" y="-50%" width="200%" height="200%">
     <feGaussianBlur stdDeviation="2.5" result="blur" />
     <feMerge>
       <feMergeNode in="blur" />
@@ -315,11 +310,8 @@ async function renderLeetCodeCard(data, options = {}) {
 <g transform="translate(${pad}, 38)">
   <!-- Exact LeetCode Logo Vector -->
   <g transform="translate(0, -16) scale(0.95)">
-    <!-- White Left Bracket < -->
     <path d="M 17 3 L 5 15 L 17 27" fill="none" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <!-- Orange Inner C -->
     <path d="M 19 9 C 13 9, 11 14, 11 19 C 11 24, 13 29, 19 29" fill="none" stroke="#FFA116" stroke-width="4.2" stroke-linecap="round"/>
-    <!-- Grey Horizontal Bar - -->
     <line x1="16" y1="19" x2="26" y2="19" stroke="#B3B3B3" stroke-width="4.2" stroke-linecap="round"/>
   </g>
   <text x="34" y="-2" font-size="18" font-weight="700" fill="${white}">${user.username}</text>
@@ -375,20 +367,29 @@ async function renderLeetCodeCard(data, options = {}) {
   <text x="0" y="35" text-anchor="middle" font-size="12" font-weight="500" fill="${grey}">Total Submissions</text>
 </g>
 
-<!-- Current Streak Ring with Glowing Neon Effect & Blue Flame Icon -->
+<!-- Current Streak Ring with Top Gap & Electric Blue Flame Icon -->
 <g transform="translate(660, 125)">
-  <!-- Glowing Outer Neon Green Ring -->
-  <circle cx="0" cy="0" r="${sR}" stroke-width="3.5" fill="none" stroke="${green}" filter="url(#green-glow)"/>
-  <circle cx="0" cy="0" r="${sR}" stroke-width="3.5" fill="none" stroke="${green}"/>
+  <!-- Track Ring with Top Gap -->
+  <path d="M -12 -33 A 35 35 0 1 0 12 -33" fill="none" stroke="${track}" stroke-width="4.5" stroke-linecap="round"/>
 
-  <!-- Glowing Blue Flame Icon Atop Ring -->
-  <g transform="translate(0, ${-sR})" filter="url(#blue-glow)">
-    <path d="M 0 -8 C 2 -4, 4 -2, 4 2 C 4 6, 2 8, 0 8 C -2 8, -4 6, -4 2 C -4 -2, -2 -4, 0 -8 Z" fill="#0088FF"/>
-    <path d="M 0 -3 C 1 0, 2 1, 2 3 C 2 5, 1 6, 0 6 C -1 6, -2 5, -2 3 C -2 1, -1 0, 0 -3 Z" fill="#00D2FF"/>
+  <!-- Glowing Neon Green Streak Arc with Top Gap -->
+  <g filter="url(#neon-glow)">
+    <path d="M -12 -33 A 35 35 0 1 0 12 -33" fill="none" stroke="${green}" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+  <path d="M -12 -33 A 35 35 0 1 0 12 -33" fill="none" stroke="${green}" stroke-width="4.5" stroke-linecap="round"/>
+
+  <!-- Flame Icon at Top Gap -->
+  <g transform="translate(0, -35)">
+    <circle cx="0" cy="0" r="10" fill="${bg}"/>
+    <g filter="url(#flame-glow)">
+      <path d="M 0 -9 C 3.5 -5, 6.5 -3, 6.5 2 C 6.5 6, 3.5 8.5 0 8.5 C -3.5 8.5, -6.5 6, -6.5 2 C -6.5 -3, -3.5 -5, 0 -9 Z" fill="#1e88e5"/>
+    </g>
+    <path d="M 0 -9 C 3.5 -5, 6.5 -3, 6.5 2 C 6.5 6, 3.5 8.5 0 8.5 C -3.5 8.5, -6.5 6, -6.5 2 C -6.5 -3, -3.5 -5, 0 -9 Z" fill="#1e88e5"/>
+    <path d="M 0 -3 C 1.8 -1, 3 0.5, 3 2.5 C 3 4.5 1.5 5.5 0 5.5 C -1.5 5.5, -3 4.5, -3 2.5 C -3 0.5, -1.8 -1, 0 -3 Z" fill="${bg}"/>
   </g>
 
-  <text x="0" y="8" text-anchor="middle" font-size="22" font-weight="800" fill="${white}">${currentStreak}</text>
-  <text x="0" y="${sR + 25}" text-anchor="middle" font-size="13" font-weight="700" fill="${white}">Current Streak</text>
+  <text x="0" y="10" text-anchor="middle" font-size="28" font-weight="800" fill="${white}">${currentStreak}</text>
+  <text x="0" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="${white}">Current Streak</text>
 </g>
 
 <!-- Highest Streak -->
