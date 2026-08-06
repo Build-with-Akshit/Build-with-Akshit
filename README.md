@@ -52,23 +52,11 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 ## 📈 Lifetime Coding Stats
 
-<!-- LOC_STATS_START -->
-
-```text
-📝 Total Lines of Code : 18,588
-📦 Total Repositories  : 8
-💻 Languages           : TypeScript (31.6%), Dart (18.7%), Python (11.3%), JavaScript (10.8%), C++ (7.6%), CMake (7.1%), CSS (6.5%), Kotlin (2.4%)
-🕒 Last Updated        : 2026-08-06 12:56 UTC
-```
-
-<!-- LOC_STATS_END -->
+![LOC Stats](https://build-with-akshit-beta.vercel.app/api/loc?username=Build-with-Akshit&theme=cobalt2&border_radius=15&card_width=550)<br/>
 
 # 📊 GitHub Stats:
-<!-- ![](https://github-readme-stats.shion.dev/api?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true)<br/> -->
-<!-- ![](https://github-readme-stats.shion.dev/api/top-langs/?username=Build-with-Akshit&theme=cobalt2&hide_border=false&include_all_commits=true&count_private=true&layout=compact)<br/> -->
-![LOC Stats](https://YOUR-VERCEL-URL.vercel.app/api?username=Build-with-Akshit&theme=cobalt2&border_radius=15&card_width=550)
 
 ![](https://github-readme-streak-stats-eight.vercel.app/?user=Build-with-Akshit&theme=cobalt2&hide_border=false&border_radius=15&card_width=550)<br/>
-![](https://github-readme-stats-phi-seven-83.vercel.app/api?username=Build-with-Akshit&show_icons=true&theme=cobalt2&include_all_commits=true&count_private=true&border_radius=15&rank_icon=github&custom_title=Akshit's%20GitHub%20Stats)<br/>
-![](https://github-readme-stats-phi-seven-83.vercel.app/api/top-langs/?username=Build-with-Akshit&layout=compact&theme=cobalt2&border_radius=15&langs_count=20)<br/>
+![](https://build-with-akshit-beta.vercel.app/api?username=Build-with-Akshit&show_icons=true&theme=cobalt2&include_all_commits=true&count_private=true&border_radius=15&rank_icon=github&custom_title=Akshit's%20GitHub%20Stats)<br/>
+![](https://build-with-akshit-beta.vercel.app/api/top-langs/?username=Build-with-Akshit&layout=compact&theme=cobalt2&border_radius=15&langs_count=20)<br/>
 ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/>
