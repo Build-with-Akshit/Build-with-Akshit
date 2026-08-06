@@ -33,81 +33,147 @@ async function fetchLeetCodeData(username) {
       headers: {
         "Content-Type": "application/json",
         Referer: "https://leetcode.com",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
       timeout: 10000,
-    },
+    }
   );
   return response.data;
+}
+
+async function fetchAvatarBase64(avatarUrl) {
+  if (!avatarUrl) return null;
+  try {
+    const res = await axios.get(avatarUrl, {
+      responseType: "arraybuffer",
+      timeout: 5000,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      },
+    });
+    const mime = res.headers["content-type"] || "image/png";
+    const base64 = Buffer.from(res.data).toString("base64");
+    return `data:${mime};base64,${base64}`;
+  } catch (e) {
+    return null;
+  }
+}
+
+function calcCurrentStreak(submissionCalendar) {
+  if (!submissionCalendar) return 0;
+  let calMap;
+  try {
+    calMap = JSON.parse(submissionCalendar);
+  } catch (e) {
+    return 0;
+  }
+
+  const dateSet = new Set();
+  for (const ts of Object.keys(calMap)) {
+    if (calMap[ts] > 0) {
+      const d = new Date(parseInt(ts, 10) * 1000);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      dateSet.add(key);
+    }
+  }
+
+  const today = new Date();
+  const dayMs = 86400000;
+  const fmt = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+  const todayKey = fmt(today);
+  const yesterdayKey = fmt(new Date(today.getTime() - dayMs));
+
+  let currentKey = null;
+  if (dateSet.has(todayKey)) {
+    currentKey = todayKey;
+  } else if (dateSet.has(yesterdayKey)) {
+    currentKey = yesterdayKey;
+  } else {
+    return 0;
+  }
+
+  let streak = 0;
+  let checkDate = currentKey === todayKey ? today : new Date(today.getTime() - dayMs);
+  while (dateSet.has(fmt(checkDate))) {
+    streak++;
+    checkDate = new Date(checkDate.getTime() - dayMs);
+  }
+
+  return streak;
 }
 
 function measureText(str, fontSize) {
   return str.length * fontSize * 0.6;
 }
 
-function renderLeetCodeCard(data, options = {}) {
+async function renderLeetCodeCard(data, options = {}) {
   const { border_radius = "20" } = options;
 
   const user = data?.data?.matchedUser;
   if (!user) throw new CustomError("LeetCode user not found", "USER_NOT_FOUND");
+
+  // Fetch avatar as base64 so GitHub Camo Proxy renders it seamlessly
+  const avatarB64 = await fetchAvatarBase64(user.profile?.userAvatar);
 
   // ── Data Extraction ──
   const allQ = data.data.allQuestionsCount || [];
   const ac = user.submitStats?.acSubmissionNum || [];
   const ts = user.submitStats?.totalSubmissionNum || [];
 
-  const easyQ   = allQ.find(q => q.difficulty === "Easy")?.count   || 958;
-  const medQ    = allQ.find(q => q.difficulty === "Medium")?.count || 2095;
-  const hardQ   = allQ.find(q => q.difficulty === "Hard")?.count   || 960;
+  const easyQ = allQ.find((q) => q.difficulty === "Easy")?.count || 958;
+  const medQ = allQ.find((q) => q.difficulty === "Medium")?.count || 2095;
+  const hardQ = allQ.find((q) => q.difficulty === "Hard")?.count || 960;
+  const totalQ = allQ.find((q) => q.difficulty === "All")?.count || 4013;
 
-  const solved     = ac.find(s => s.difficulty === "All")?.count    || 0;
-  const easySolved = ac.find(s => s.difficulty === "Easy")?.count   || 0;
-  const medSolved  = ac.find(s => s.difficulty === "Medium")?.count || 0;
-  const hardSolved = ac.find(s => s.difficulty === "Hard")?.count   || 0;
+  const solved = ac.find((s) => s.difficulty === "All")?.count || 0;
+  const easySolved = ac.find((s) => s.difficulty === "Easy")?.count || 0;
+  const medSolved = ac.find((s) => s.difficulty === "Medium")?.count || 0;
+  const hardSolved = ac.find((s) => s.difficulty === "Hard")?.count || 0;
 
-  const totalSub = ts.find(s => s.difficulty === "All")?.submissions || 0;
-  const streak   = user.userCalendar?.streak || 0;
-  const active   = user.userCalendar?.totalActiveDays || 0;
-  const ranking  = user.profile?.ranking || 0;
-  const fmtRank  = ranking > 0 ? ranking.toLocaleString() : "N/A";
-  const avatar   = user.profile?.userAvatar || "";
+  const totalSub = ts.find((s) => s.difficulty === "All")?.submissions || 0;
 
-  const totalQ   = allQ.find(q => q.difficulty === "All")?.count || 4013;
-  const pctAll   = totalQ > 0 ? (solved / totalQ) * 100 : 0;
-  const pctEasy  = easyQ > 0 ? (easySolved / easyQ) * 100 : 0;
-  const pctMed   = medQ > 0 ? (medSolved / medQ) * 100 : 0;
-  const pctHard  = hardQ > 0 ? (hardSolved / hardQ) * 100 : 0;
+  const currentStreak = calcCurrentStreak(user.userCalendar?.submissionCalendar);
+  const highestStreak = user.userCalendar?.streak || 0; // Max streak
+
+  const ranking = user.profile?.ranking || 0;
+  const fmtRank = ranking > 0 ? ranking.toLocaleString() : "N/A";
+
+  // Percentages
+  const pctAll = totalQ > 0 ? (solved / totalQ) * 100 : 0;
+  const pctEasy = easyQ > 0 ? (easySolved / easyQ) * 100 : 0;
+  const pctMed = medQ > 0 ? (medSolved / medQ) * 100 : 0;
+  const pctHard = hardQ > 0 ? (hardSolved / hardQ) * 100 : 0;
 
   // ── Palette ──
-  const bg       = "#0d1117";
-  const bdr      = "#238636";
-  const white    = "#e6edf3";
-  const green    = "#2ea043";
+  const bg = "#0d1117";
+  const bdr = "#238636";
+  const white = "#e6edf3";
+  const green = "#2ea043";
   const dimGreen = "#238636";
-  const grey     = "#8b949e";
-  const track    = "#21262d";
-  const easyC    = "#00b8a3";
-  const medC     = "#ffc01e";
-  const hardC    = "#ef4743";
-  const pillBg   = "#0d1b12";
+  const grey = "#8b949e";
+  const track = "#21262d";
+  const easyC = "#00b8a3";
+  const medC = "#ffc01e";
+  const hardC = "#ef4743";
+  const pillBg = "#0d1b12";
 
-  // ── Ring Math ──
+  // ── Solved Ring Math ──
   const R = 40;
   const C = 2 * Math.PI * R;
   const off = C - (pctAll / 100) * C;
 
-  // Streak ring
-  const sR = 30;
+  // ── Streak Ring Math ──
+  const sR = 32;
   const sC = 2 * Math.PI * sR;
 
-  // ── Card dimensions ──
+  // ── Layout Dimensions ──
   const W = 920;
   const pad = 35;
-  const dividerX = 400;
-
-  // ── Progress bar config ──
-  const barW = 110;
-  const barGroupX = 170;
+  const dividerX = 410;
+  const barW = 120;
 
   // ═══ Skills Badges ═══
   const tagData = user.tagProblemCounts || {};
@@ -118,14 +184,18 @@ function renderLeetCodeCard(data, options = {}) {
   ].sort((a, b) => b.problemsSolved - a.problemsSolved);
 
   let skillsSvg = "";
-  let bx = 0, by = 0;
-  allTags.slice(0, 14).forEach(t => {
+  let bx = 0,
+    by = 0;
+  allTags.slice(0, 14).forEach((t) => {
     const lbl = `${t.tagName} \u00d7${t.problemsSolved}`;
     const w = measureText(lbl, 12) + 26;
-    if (bx + w > W - pad * 2) { bx = 0; by += 32; }
+    if (bx + w > W - pad * 2) {
+      bx = 0;
+      by += 32;
+    }
     skillsSvg += `<g transform="translate(${bx},${by})">
       <rect width="${w}" height="26" rx="13" fill="${pillBg}" stroke="${dimGreen}" stroke-width="1.2"/>
-      <text x="${w/2}" y="17" text-anchor="middle" font-size="12" font-weight="500" fill="${green}">${lbl}</text>
+      <text x="${w / 2}" y="17" text-anchor="middle" font-size="12" font-weight="500" fill="${green}">${lbl}</text>
     </g>`;
     bx += w + 10;
   });
@@ -135,12 +205,12 @@ function renderLeetCodeCard(data, options = {}) {
   const langs = user.languageProblemCount || [];
   let langSvg = "";
   let langBx = 0;
-  langs.forEach(l => {
+  langs.forEach((l) => {
     const lbl = `${l.languageName} \u00d7${l.problemsSolved}`;
     const w = measureText(lbl, 12) + 26;
     langSvg += `<g transform="translate(${langBx},0)">
       <rect width="${w}" height="26" rx="13" fill="${pillBg}" stroke="${dimGreen}" stroke-width="1.2"/>
-      <text x="${w/2}" y="17" text-anchor="middle" font-size="12" font-weight="500" fill="${green}">${lbl}</text>
+      <text x="${w / 2}" y="17" text-anchor="middle" font-size="12" font-weight="500" fill="${green}">${lbl}</text>
     </g>`;
     langBx += w + 10;
   });
@@ -148,7 +218,9 @@ function renderLeetCodeCard(data, options = {}) {
   // ═══ Heatmap ═══
   const calRaw = user.userCalendar?.submissionCalendar || "{}";
   let calMap = {};
-  try { calMap = JSON.parse(calRaw); } catch (e) { /* empty */ }
+  try {
+    calMap = JSON.parse(calRaw);
+  } catch (e) {}
 
   const today = new Date();
   const dayMs = 86400000;
@@ -158,7 +230,7 @@ function renderLeetCodeCard(data, options = {}) {
 
   const dateCounts = {};
   for (const stamp of Object.keys(calMap)) {
-    const d = new Date(parseInt(stamp) * 1000);
+    const d = new Date(parseInt(stamp, 10) * 1000);
     dateCounts[`${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`] = calMap[stamp];
   }
 
@@ -192,45 +264,79 @@ function renderLeetCodeCard(data, options = {}) {
     }
   }
 
-  // ═══ Dynamic Y positions ═══
-  const headerEnd   = 70;
-  const topEnd      = 200;
-  const div1Y       = topEnd + 5;
-  const skillLblY   = div1Y + 28;
-  const skillBdgY   = skillLblY + 18;
-  const div2Y       = skillBdgY + skillsH + 8;
-  const langLblY    = div2Y + 28;
-  const langBdgY    = langLblY + 18;
-  const div3Y       = langBdgY + 40;
-  const heatLblY    = div3Y + 28;
-  const heatGridY   = heatLblY + 25;
-  const heatH       = 7 * (cell + gap);
-  const legendY     = heatGridY + heatH + 18;
-  const totalH      = legendY + 25;
+  // Y positions
+  const topEnd = 200;
+  const div1Y = topEnd + 5;
+  const skillLblY = div1Y + 28;
+  const skillBdgY = skillLblY + 18;
+  const div2Y = skillBdgY + skillsH + 8;
+  const langLblY = div2Y + 28;
+  const langBdgY = langLblY + 18;
+  const div3Y = langBdgY + 40;
+  const heatLblY = div3Y + 28;
+  const heatGridY = heatLblY + 25;
+  const heatH = 7 * (cell + gap);
+  const legendY = heatGridY + heatH + 18;
+  const totalH = legendY + 25;
 
   const rx = border_radius;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${totalH}" viewBox="0 0 ${W} ${totalH}">
 <style>text{font-family:'Segoe UI',Ubuntu,'Helvetica Neue',sans-serif}</style>
 
-<!-- Card -->
+<defs>
+  <!-- Glow Filters -->
+  <filter id="green-glow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="3.5" result="blur" />
+    <feMerge>
+      <feMergeNode in="blur" />
+      <feMergeNode in="SourceGraphic" />
+    </feMerge>
+  </filter>
+
+  <filter id="blue-glow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="2.5" result="blur" />
+    <feMerge>
+      <feMergeNode in="blur" />
+      <feMergeNode in="SourceGraphic" />
+    </feMerge>
+  </filter>
+
+  <!-- Avatar Clip Circle -->
+  <clipPath id="aclip">
+    <circle cx="22" cy="22" r="20" />
+  </clipPath>
+</defs>
+
+<!-- Card Background -->
 <rect x="1" y="1" width="${W - 2}" height="${totalH - 2}" rx="${rx}" fill="${bg}" stroke="${bdr}" stroke-width="2"/>
 
-<!-- ════════════════════ HEADER ════════════════════ -->
+<!-- ═══════════ HEADER ═══════════ -->
 <g transform="translate(${pad}, 38)">
-  <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.17 5.79a1.374 1.374 0 0 0-.012 1.936l1.374 1.374a1.374 1.374 0 0 0 1.936-.012l5.352-5.352A1.374 1.374 0 0 0 14.88 1.8L13.5.438A1.374 1.374 0 0 0 13.483 0zm-8.6 7.422a1.374 1.374 0 0 0-.968.423l-3.48 3.48a1.374 1.374 0 0 0 0 1.943l1.374 1.374a1.374 1.374 0 0 0 1.943 0l3.48-3.48a1.374 1.374 0 0 0 0-1.943L5.858 7.845a1.374 1.374 0 0 0-.975-.423z" fill="#FFA116" transform="translate(0,-14) scale(1.4)"/>
-  <text x="32" y="-2" font-size="18" font-weight="700" fill="${white}">${user.username}</text>
-  <text x="32" y="18" font-size="13" font-weight="600" fill="${green}">Rank ${fmtRank}</text>
+  <!-- Exact LeetCode Logo Vector -->
+  <g transform="translate(0, -16) scale(0.95)">
+    <!-- White Left Bracket < -->
+    <path d="M 17 3 L 5 15 L 17 27" fill="none" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Orange Inner C -->
+    <path d="M 19 9 C 13 9, 11 14, 11 19 C 11 24, 13 29, 19 29" fill="none" stroke="#FFA116" stroke-width="4.2" stroke-linecap="round"/>
+    <!-- Grey Horizontal Bar - -->
+    <line x1="16" y1="19" x2="26" y2="19" stroke="#B3B3B3" stroke-width="4.2" stroke-linecap="round"/>
+  </g>
+  <text x="34" y="-2" font-size="18" font-weight="700" fill="${white}">${user.username}</text>
+  <text x="34" y="18" font-size="13" font-weight="600" fill="${green}">Rank ${fmtRank}</text>
 </g>
 
 <!-- Avatar -->
 <g transform="translate(305, 22)">
-  <defs><clipPath id="aclip"><circle cx="22" cy="22" r="20"/></clipPath></defs>
-  <circle cx="22" cy="22" r="22" fill="#161b22" stroke="${grey}" stroke-width="1.5"/>
-  ${avatar ? `<image href="${avatar}" x="2" y="2" width="40" height="40" clip-path="url(#aclip)"/>` : `<text x="22" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="${green}">${user.username.substring(0, 2).toUpperCase()}</text>`}
+  <circle cx="22" cy="22" r="22" fill="#161b22" stroke="${green}" stroke-width="1.8"/>
+  ${
+    avatarB64
+      ? `<image href="${avatarB64}" x="2" y="2" width="40" height="40" clip-path="url(#aclip)"/>`
+      : `<text x="22" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="${green}">${user.username.substring(0, 2).toUpperCase()}</text>`
+  }
 </g>
 
-<!-- ════════════════════ TOP SECTION ════════════════════ -->
+<!-- ═══════════ TOP SECTION ═══════════ -->
 <!-- Vertical divider -->
 <line x1="${dividerX}" y1="30" x2="${dividerX}" y2="${topEnd}" stroke="${dimGreen}" stroke-width="1" stroke-opacity="0.4"/>
 
@@ -238,76 +344,81 @@ function renderLeetCodeCard(data, options = {}) {
 <g transform="translate(95, 135)">
   <circle cx="0" cy="0" r="${R}" stroke-width="7" fill="none" stroke="${track}"/>
   <circle cx="0" cy="0" r="${R}" stroke-width="7" fill="none" stroke="${green}" stroke-dasharray="${C}" stroke-dashoffset="${off}" stroke-linecap="round" transform="rotate(-90)"/>
-  <circle cx="${-R * Math.cos(Math.PI / 4)}" cy="${-R * Math.sin(Math.PI / 4) - 4}" r="4.5" fill="${green}"/>
   <text x="0" y="5" text-anchor="middle" font-size="30" font-weight="800" fill="${white}">${solved}</text>
   <text x="0" y="26" text-anchor="middle" font-size="12" font-weight="600" fill="${green}">Solved</text>
 </g>
 
 <!-- Easy / Medium / Hard Progress Bars -->
-<g transform="translate(${barGroupX}, 100)">
-  <text x="0" y="14" font-size="13" font-weight="600" fill="${white}">Easy</text>
-  <circle cx="52" cy="10" r="4.5" fill="${easyC}"/>
-  <rect x="65" y="6" width="${barW}" height="8" rx="4" fill="${track}"/>
-  <rect x="65" y="6" width="${Math.max(2, (pctEasy / 100) * barW)}" height="8" rx="4" fill="${easyC}"/>
-  <text x="${65 + barW + 12}" y="14" font-size="12" font-weight="600" fill="${green}">${easySolved}/${easyQ}</text>
+<g transform="translate(175, 100)">
+  <!-- Easy -->
+  <text x="0" y="14" font-size="14" font-weight="600" fill="${white}">Easy</text>
+  <rect x="70" y="7" width="${barW}" height="8" rx="4" fill="${track}"/>
+  <rect x="70" y="7" width="${Math.max(2, (pctEasy / 100) * barW)}" height="8" rx="4" fill="${easyC}"/>
+  <text x="${70 + barW + 14}" y="15" font-size="13" font-weight="600" fill="${green}">${easySolved}/${easyQ}</text>
 
-  <text x="0" y="44" font-size="13" font-weight="600" fill="${white}">Medium</text>
-  <circle cx="52" cy="40" r="4.5" fill="${medC}"/>
-  <rect x="65" y="36" width="${barW}" height="8" rx="4" fill="${track}"/>
-  <rect x="65" y="36" width="${Math.max(2, (pctMed / 100) * barW)}" height="8" rx="4" fill="${medC}"/>
-  <text x="${65 + barW + 12}" y="44" font-size="12" font-weight="600" fill="${medC}">${medSolved}/${medQ}</text>
+  <!-- Medium -->
+  <text x="0" y="44" font-size="14" font-weight="600" fill="${white}">Medium</text>
+  <rect x="70" y="37" width="${barW}" height="8" rx="4" fill="${track}"/>
+  <rect x="70" y="37" width="${Math.max(2, (pctMed / 100) * barW)}" height="8" rx="4" fill="${medC}"/>
+  <text x="${70 + barW + 14}" y="45" font-size="13" font-weight="600" fill="${medC}">${medSolved}/${medQ}</text>
 
-  <text x="0" y="74" font-size="13" font-weight="600" fill="${white}">Hard</text>
-  <circle cx="52" cy="70" r="4.5" fill="${hardC}"/>
-  <rect x="65" y="66" width="${barW}" height="8" rx="4" fill="${track}"/>
-  <rect x="65" y="66" width="${Math.max(2, (pctHard / 100) * barW)}" height="8" rx="4" fill="${hardC}"/>
-  <text x="${65 + barW + 12}" y="74" font-size="12" font-weight="600" fill="${hardC}">${hardSolved}/${hardQ}</text>
+  <!-- Hard -->
+  <text x="0" y="74" font-size="14" font-weight="600" fill="${white}">Hard</text>
+  <rect x="70" y="67" width="${barW}" height="8" rx="4" fill="${track}"/>
+  <rect x="70" y="67" width="${Math.max(2, (pctHard / 100) * barW)}" height="8" rx="4" fill="${hardC}"/>
+  <text x="${70 + barW + 14}" y="75" font-size="13" font-weight="600" fill="${hardC}">${hardSolved}/${hardQ}</text>
 </g>
 
 <!-- Total Submissions -->
-<g transform="translate(490, 115)">
+<g transform="translate(500, 115)">
   <text x="0" y="10" text-anchor="middle" font-size="32" font-weight="800" fill="${white}">${totalSub}</text>
   <text x="0" y="35" text-anchor="middle" font-size="12" font-weight="500" fill="${grey}">Total Submissions</text>
 </g>
 
-<!-- Current Streak Ring -->
-<g transform="translate(650, 125)">
-  <circle cx="0" cy="0" r="${sR}" stroke-width="3" fill="none" stroke="${track}"/>
-  <circle cx="0" cy="0" r="${sR}" stroke-width="3" fill="none" stroke="${green}" stroke-dasharray="${sC}" stroke-dashoffset="0" stroke-linecap="round"/>
-  <!-- Flame icon at top -->
-  <path d="M0,-6c1.2,3-0.8,4.5-2,5.5c-1.5,1-2.2,2.5-2.2,4.2c0,2.5,1.8,4.3,4.2,4.3s4.2-1.8,4.2-4.3c0-2.5-1.5-4-3.2-5.5c0.2,1.5-0.5,2.5-1,3.3z" fill="${green}" transform="translate(0,${-sR - 5}) scale(0.7)"/>
-  <text x="0" y="6" text-anchor="middle" font-size="22" font-weight="800" fill="${white}">${streak}</text>
+<!-- Current Streak Ring with Glowing Neon Effect & Blue Flame Icon -->
+<g transform="translate(660, 125)">
+  <!-- Glowing Outer Neon Green Ring -->
+  <circle cx="0" cy="0" r="${sR}" stroke-width="3.5" fill="none" stroke="${green}" filter="url(#green-glow)"/>
+  <circle cx="0" cy="0" r="${sR}" stroke-width="3.5" fill="none" stroke="${green}"/>
+
+  <!-- Glowing Blue Flame Icon Atop Ring -->
+  <g transform="translate(0, ${-sR})" filter="url(#blue-glow)">
+    <path d="M 0 -8 C 2 -4, 4 -2, 4 2 C 4 6, 2 8, 0 8 C -2 8, -4 6, -4 2 C -4 -2, -2 -4, 0 -8 Z" fill="#0088FF"/>
+    <path d="M 0 -3 C 1 0, 2 1, 2 3 C 2 5, 1 6, 0 6 C -1 6, -2 5, -2 3 C -2 1, -1 0, 0 -3 Z" fill="#00D2FF"/>
+  </g>
+
+  <text x="0" y="8" text-anchor="middle" font-size="22" font-weight="800" fill="${white}">${currentStreak}</text>
   <text x="0" y="${sR + 25}" text-anchor="middle" font-size="13" font-weight="700" fill="${white}">Current Streak</text>
 </g>
 
 <!-- Highest Streak -->
 <g transform="translate(820, 115)">
-  <text x="0" y="10" text-anchor="middle" font-size="32" font-weight="800" fill="${white}">${active}</text>
+  <text x="0" y="10" text-anchor="middle" font-size="32" font-weight="800" fill="${white}">${highestStreak}</text>
   <text x="0" y="35" text-anchor="middle" font-size="12" font-weight="500" fill="${grey}">Highest Streak</text>
 </g>
 
-<!-- ════════════════════ DIVIDER 1 ════════════════════ -->
+<!-- ═══════════ DIVIDER 1 ═══════════ -->
 <line x1="${pad}" y1="${div1Y}" x2="${W - pad}" y2="${div1Y}" stroke="${dimGreen}" stroke-width="1" stroke-opacity="0.4"/>
 
-<!-- ════════════════════ SKILLS ════════════════════ -->
+<!-- ═══════════ SKILLS ═══════════ -->
 <text x="${pad}" y="${skillLblY}" font-size="15" font-weight="700" fill="${white}">Skills</text>
 <g transform="translate(${pad}, ${skillBdgY})">
   ${skillsSvg}
 </g>
 
-<!-- ════════════════════ DIVIDER 2 ════════════════════ -->
+<!-- ═══════════ DIVIDER 2 ═══════════ -->
 <line x1="${pad}" y1="${div2Y}" x2="${W - pad}" y2="${div2Y}" stroke="${dimGreen}" stroke-width="1" stroke-opacity="0.4"/>
 
-<!-- ════════════════════ LANGUAGES ════════════════════ -->
+<!-- ═══════════ LANGUAGES ═══════════ -->
 <text x="${pad}" y="${langLblY}" font-size="15" font-weight="700" fill="${white}">Languages</text>
 <g transform="translate(${pad}, ${langBdgY})">
   ${langSvg}
 </g>
 
-<!-- ════════════════════ DIVIDER 3 ════════════════════ -->
+<!-- ═══════════ DIVIDER 3 ═══════════ -->
 <line x1="${pad}" y1="${div3Y}" x2="${W - pad}" y2="${div3Y}" stroke="${dimGreen}" stroke-width="1" stroke-opacity="0.4"/>
 
-<!-- ════════════════════ HEATMAP ════════════════════ -->
+<!-- ═══════════ HEATMAP ═══════════ -->
 <text x="${pad}" y="${heatLblY}" font-size="15" font-weight="700" fill="${white}">Submission Heatmap</text>
 <g transform="translate(${pad}, ${heatGridY})">
   ${mLabelSvg}
@@ -333,7 +444,7 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=3600");
   try {
     const data = await fetchLeetCodeData(username);
-    const svg = renderLeetCodeCard(data, req.query);
+    const svg = await renderLeetCodeCard(data, req.query);
     return res.status(200).send(svg);
   } catch (err) {
     return res.status(500).send(`<svg xmlns="http://www.w3.org/2000/svg" width="920" height="100">
