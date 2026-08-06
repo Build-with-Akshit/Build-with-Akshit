@@ -318,8 +318,8 @@ async function renderLeetCodeCard(data, options = {}) {
   <text x="34" y="18" font-size="13" font-weight="600" fill="${green}">Rank ${fmtRank}</text>
 </g>
 
-<!-- Avatar -->
-<g transform="translate(305, 22)">
+<!-- Avatar (Moved further right to prevent overlap with long usernames) -->
+<g transform="translate(345, 22)">
   <circle cx="22" cy="22" r="22" fill="#161b22" stroke="${green}" stroke-width="1.8"/>
   ${
     avatarB64
