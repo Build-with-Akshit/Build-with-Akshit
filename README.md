@@ -24,6 +24,7 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 ## 🌐 Connect:
 [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:akshit9359@gmail.com) 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/हृद्य-रवींदे) 
+[![LeetCode](https://img.shields.io/badge/LeetCode-FFA116?logo=leetcode&logoColor=black)](https://leetcode.com/u/Build-with-Akshit/)
 [![Discord](https://img.shields.io/badge/Discord-%237289DA.svg?logo=discord&logoColor=white)](https://discord.gg/https://discord.gg/Qm9arepxxZ) 
 [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?logo=Reddit&logoColor=white)](https://reddit.com/user/Build-with-Akshit) 
 [![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white)](https://instagram.com/premium.heart_._._) 
@@ -48,12 +49,16 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 ---
 
-
-
 # 📊 GitHub Stats:
 
 ![](https://build-with-akshit-beta.vercel.app/api/snake?username=Build-with-Akshit&v=2)<br/>
 ![](https://github-readme-streak-stats-eight.vercel.app/?user=Build-with-Akshit&theme=cobalt2&hide_border=false&border_radius=15&card_width=550)<br/>
 ![](https://build-with-akshit-beta.vercel.app/api?username=Build-with-Akshit&show_icons=true&theme=cobalt2&include_all_commits=true&count_private=true&border_radius=15&rank_icon=github&custom_title=Akshit's%20GitHub%20Stats&show=loc&v=2)<br/>
 ![](https://build-with-akshit-beta.vercel.app/api/top-langs/?username=Build-with-Akshit&layout=compact&theme=cobalt2&border_radius=15&langs_count=20&v=2)<br/>
+
+# 🧩 LeetCode Stats:
+
+![](https://github-readme-leetcode-card.romitsagu.com/Build-with-Akshit?theme=dark)<br/>
+![](https://github-readme-leetcode-stats.vercel.app/api/card?username=Build-with-Akshit&theme=cobalt2&border_radius=15)<br/>
+
 ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/>
