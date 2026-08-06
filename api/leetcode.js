@@ -104,6 +104,9 @@ function renderLeetCodeCard(data, options = {}) {
 
   // Percentages & Circle Math
   const totalPercent = Math.min(100, Math.round((totalSolved / totalQuestions) * 100 * 10) / 10);
+  const easyPercent = easyQuestions > 0 ? Math.min(100, Math.round((easySolved / easyQuestions) * 100)) : 0;
+  const mediumPercent = mediumQuestions > 0 ? Math.min(100, Math.round((mediumSolved / mediumQuestions) * 100)) : 0;
+  const hardPercent = hardQuestions > 0 ? Math.min(100, Math.round((hardSolved / hardQuestions) * 100)) : 0;
   const radius = 34;
   const circumference = 2 * Math.PI * radius; // ~213.6
   const strokeDashoffset = circumference - (totalPercent / 100) * circumference;
