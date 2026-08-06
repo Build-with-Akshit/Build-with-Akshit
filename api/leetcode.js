@@ -282,7 +282,9 @@ async function renderLeetCodeCard(data, options = {}) {
 <defs>
   <!-- Glow Filters -->
   <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
-    <feGaussianBlur stdDeviation="3.5" result="blur" />
+    <feGaussianBlur result="blur">
+      <animate attributeName="stdDeviation" values="2; 5.5; 2" dur="2s" repeatCount="indefinite" />
+    </feGaussianBlur>
     <feMerge>
       <feMergeNode in="blur" />
       <feMergeNode in="SourceGraphic" />
@@ -290,7 +292,9 @@ async function renderLeetCodeCard(data, options = {}) {
   </filter>
 
   <filter id="flame-glow" x="-50%" y="-50%" width="200%" height="200%">
-    <feGaussianBlur stdDeviation="2.5" result="blur" />
+    <feGaussianBlur result="blur">
+      <animate attributeName="stdDeviation" values="1.5; 4.5; 1.5" dur="2s" repeatCount="indefinite" />
+    </feGaussianBlur>
     <feMerge>
       <feMergeNode in="blur" />
       <feMergeNode in="SourceGraphic" />
@@ -378,14 +382,23 @@ async function renderLeetCodeCard(data, options = {}) {
   </g>
   <path d="M -12 -33 A 35 35 0 1 0 12 -33" fill="none" stroke="${green}" stroke-width="4.5" stroke-linecap="round"/>
 
-  <!-- Flame Icon at Top Gap -->
+  <!-- Animated Flame Icon at Top Gap -->
   <g transform="translate(0, -35)">
+    <!-- Elevation Float Animation -->
+    <animateTransform attributeName="transform" type="translate" values="0,0; 0,-3; 0,0" dur="2s" repeatCount="indefinite" additive="sum"/>
+    <animateTransform attributeName="transform" type="scale" values="1; 1.05; 1" dur="2s" repeatCount="indefinite" additive="sum"/>
+    
     <circle cx="0" cy="0" r="10" fill="${bg}"/>
+    
     <g filter="url(#flame-glow)">
-      <path d="M 0 -9 C 3.5 -5, 6.5 -3, 6.5 2 C 6.5 6, 3.5 8.5 0 8.5 C -3.5 8.5, -6.5 6, -6.5 2 C -6.5 -3, -3.5 -5, 0 -9 Z" fill="#1e88e5"/>
+      <!-- Outer Electric Blue Flame (hooks left) -->
+      <path d="M -2 -11 C -2 -7, 6 -6, 6 1 C 6 5, 3.5 8, 0 8 C -3.5 8, -6 5, -6 1 C -6 -4, -4 -7, -2 -11 Z" fill="#1e88e5"/>
     </g>
-    <path d="M 0 -9 C 3.5 -5, 6.5 -3, 6.5 2 C 6.5 6, 3.5 8.5 0 8.5 C -3.5 8.5, -6.5 6, -6.5 2 C -6.5 -3, -3.5 -5, 0 -9 Z" fill="#1e88e5"/>
-    <path d="M 0 -3 C 1.8 -1, 3 0.5, 3 2.5 C 3 4.5 1.5 5.5 0 5.5 C -1.5 5.5, -3 4.5, -3 2.5 C -3 0.5, -1.8 -1, 0 -3 Z" fill="${bg}"/>
+    <!-- Base flame over the glow -->
+    <path d="M -2 -11 C -2 -7, 6 -6, 6 1 C 6 5, 3.5 8, 0 8 C -3.5 8, -6 5, -6 1 C -6 -4, -4 -7, -2 -11 Z" fill="#1e88e5"/>
+    
+    <!-- Inner Dark Teardrop -->
+    <path d="M -1 -4 C 1 -2, 3 0, 3 3 C 3 5, 1.5 6, 0 6 C -1.5 6, -3 5, -3 3 C -3 1, -2 -1, -1 -4 Z" fill="${bg}"/>
   </g>
 
   <text x="0" y="10" text-anchor="middle" font-size="28" font-weight="800" fill="${white}">${currentStreak}</text>
