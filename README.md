@@ -24,13 +24,14 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 ## 🌐 Connect:
 [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:akshit9359@gmail.com) 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/हृद्य-रवींदे) 
-[![LeetCode](https://img.shields.io/badge/LeetCode-FFA116?logo=leetcode&logoColor=black)](https://leetcode.com/u/Build-with-Akshit/)
+[![LeetCode](https://img.shields.io/badge/LeetCode-282828?logo=leetcode&logoColor=#FFA116)](https://leetcode.com/u/Build-with-Akshit/)
 [![Discord](https://img.shields.io/badge/Discord-%237289DA.svg?logo=discord&logoColor=white)](https://discord.gg/https://discord.gg/Qm9arepxxZ) 
 [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?logo=Reddit&logoColor=white)](https://reddit.com/user/Build-with-Akshit) 
 [![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white)](https://instagram.com/premium.heart_._._) 
 
 # 💻 Tech Stack:
 [![Kotlin](https://img.shields.io/badge/Kotlin-19191C?style=plastic&logo=kotlin&logoColor=7F52FF)](https://kotlinlang.org/)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-19191C?style=plastic&logo=jetpackcompose&logoColor=4285F4)](https://developer.android.com/jetpack/compose)
 [![Python](https://img.shields.io/badge/Python-244D70?style=plastic&logo=python&logoColor=FFD43B)](https://www.python.org/)
 [![Dart](https://img.shields.io/badge/Dart-1C2834?style=plastic&logo=dart&logoColor=29B6F6)](https://dart.dev/)
 [![Flutter](https://img.shields.io/badge/Flutter-1076FC?style=plastic&logo=flutter&logoColor=42A5F5)](https://flutter.dev/)
