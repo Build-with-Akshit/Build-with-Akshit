@@ -311,11 +311,11 @@ async function renderLeetCodeCard(data, options = {}) {
   </clipPath>
 </defs>
 
+<a href="https://leetcode.com/u/${user.username}/" xlink:href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
 <!-- Card Background -->
 <rect x="1" y="1" width="${W - 2}" height="${totalH - 2}" rx="${rx}" fill="${bg}" stroke="${bdr}" stroke-width="2"/>
 
 <!-- ═══════════ HEADER ═══════════ -->
-<a href="https://leetcode.com/u/${user.username}/" xlink:href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
 <g transform="translate(${pad}, 38)">
   <!-- Official LeetCode Logo (Real Multi-Color Brand Vector) -->
   <g transform="translate(-2, -18) scale(1.15)">
@@ -329,10 +329,8 @@ async function renderLeetCodeCard(data, options = {}) {
   <text x="34" y="-2" font-size="18" font-weight="700" fill="${white}">${user.username}</text>
   <text x="34" y="18" font-size="13" font-weight="600" fill="${green}">Rank ${fmtRank}</text>
 </g>
-</a>
 
 <!-- Avatar (Moved further right to prevent overlap with long usernames) -->
-<a href="https://leetcode.com/u/${user.username}/" xlink:href="https://leetcode.com/u/${user.username}/" target="_blank" rel="noopener noreferrer">
 <g transform="translate(345, 22)">
   <circle cx="22" cy="22" r="22" fill="#161b22" stroke="${green}" stroke-width="1.8"/>
   ${
@@ -341,7 +339,6 @@ async function renderLeetCodeCard(data, options = {}) {
       : `<text x="22" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="${green}">${user.username.substring(0, 2).toUpperCase()}</text>`
   }
 </g>
-</a>
 
 <!-- ═══════════ TOP SECTION ═══════════ -->
 <!-- Vertical divider -->
@@ -460,6 +457,7 @@ async function renderLeetCodeCard(data, options = {}) {
   <rect x="${30 + (cell + 3) * 4}" y="0" width="${cell}" height="${cell}" rx="2" fill="#39d353"/>
   <text x="${30 + (cell + 3) * 5 + 4}" y="10" font-size="11" fill="${grey}">More</text>
 </g>
+</a>
 </svg>`;
 }
 
