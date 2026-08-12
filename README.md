@@ -58,4 +58,7 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 ![](https://build-with-akshit-beta.vercel.app/api/top-langs/?username=Build-with-Akshit&layout=compact&theme=github_dark&border_radius=15&langs_count=20&v=2)<br/>
 [![LeetCode Stats](https://build-with-akshit-beta.vercel.app/api/leetcode?username=Build-with-Akshit&theme=github_dark&border_radius=20&v=14)](https://leetcode.com/u/Build-with-Akshit/)<br/>
 
-![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/>
+<!-- ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/> -->
+[![Contribute View](https://ip-map-counter.vercel.app/api/badge?username=Build-with-Akshit)](https://ip-map-counter.vercel.app/?username=Build-with-Akshit)
+![](https://ip-map-counter.vercel.app/api/track?username=Build-with-Akshit)
+[![Website Analytics](https://ip-map-counter.vercel.app/api/dashboard?username=Build-with-Akshit)](https://ip-map-counter.vercel.app/?username=Build-with-Akshit)
