@@ -60,5 +60,5 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 <!-- ![](https://komarev.com/ghpvc/?username=Build-with-Akshit&label=PROFILE+VISITS&color=blueviolet&style=for-the-badge)<br/> -->
 [![Contribute View](https://ip-map-counter.vercel.app/api/badge?username=Build-with-Akshit)](https://ip-map-counter.vercel.app/?username=Build-with-Akshit)
-![](https://ip-map-counter.vercel.app/api/track?username=Build-with-Akshit)
+<!-- ![](https://ip-map-counter.vercel.app/api/track?username=Build-with-Akshit) -->
 [![Website Analytics](https://ip-map-counter.vercel.app/api/dashboard?username=Build-with-Akshit)](https://ip-map-counter.vercel.app/?username=Build-with-Akshit)
