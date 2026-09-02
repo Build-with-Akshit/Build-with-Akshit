@@ -66,6 +66,6 @@ Hello!  I am a B.Tech CSE student at Maharaja Surajmal Institute of Technology (
 
 </div>
 
-<!-- ![](https://ip-map-counter.vercel.app/api/track?username=Build-with-Akshit) -->
+![](https://ip-map-counter.vercel.app/api/track?username=Build-with-Akshit)
 
 [![Website Analytics](https://ip-map-counter.vercel.app/api/dashboard?username=Build-with-Akshit)](https://ip-map-counter.vercel.app/?username=Build-with-Akshit)
